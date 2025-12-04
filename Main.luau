@@ -47,6 +47,8 @@ end
 
 function Signal:Connect(FunctionToConnect:(any) -> (any))
 	
+	if #self.Signals >= self.MaximumSignals then self.MaxSignalsFunction() return end
+	
 	local Connection = {
 		Function = FunctionToConnect,
 	}

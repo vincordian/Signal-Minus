@@ -20,55 +20,55 @@ local Signal = {}
 --Holds the constructor for the signal module
 function Signal.new(SignalInfo:Class)
 	assert(SignalInfo.Name, "No name for signals module provided")
-	
+
 	local self = Signal[SignalInfo.Name]
-	
+
 	assert(Signal[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
-	
+
 	self.Name = SignalInfo.Name
 	self.MaximumSignals = SignalInfo.MaximumSignals
 	self.MaxSignalsFunction = if self.MaximumSignals then self.MaxSignalsFunction else function() print(`Reached maxed signals at {self.MaximumSignals}`) end
-	
+
 	self.Signals = {}
-	
+
 	setmetatable(self, {__index = Signal})
-	
+
 	return self
 end
 
 
 --Fires the signal
 function Signal:Fire(...)
-	for _, Connection in ipairs(self.Signals) do
+	for _, Connection in ipairsself.Signals do
 		coroutine.resume(Connection)
 	end
 end
 
 
 function Signal:Connect(FunctionToConnect:(any) -> (any))
-	
+
 	if #self.Signals >= self.MaximumSignals then self.MaxSignalsFunction() return end
-	
+
 	local Connection = {
 		Function = FunctionToConnect,
 	}
-	
+
 	function Connection:Disconnect()
 		table.remove(self.Signals, Connection)
 		table.clear(Connection)
 		Connection = nil
 	end
-	
+
 	table.insert(self.Signals, coroutine.create(Connection))
-	
+
 	return Connection
 end
 
 
 function Signal:Once(FunctionToConnect:(any) -> (any))
-	
+
 	local Connection
-	
+
 	Connection = {
 		Function = function(...)
 			FunctionToConnect(...)

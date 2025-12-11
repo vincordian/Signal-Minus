@@ -39,7 +39,7 @@ end
 
 --Fires the signal
 function Signal:Fire(...)
-	for _, Connection in ipairsself.Signals do
+	for _, Connection in self.Signals do
 		coroutine.resume(Connection)
 	end
 end

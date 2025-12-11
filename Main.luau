@@ -17,7 +17,14 @@ local Signal = {}
 
 --Public Functions--
 
---Holds the constructor for the signal module
+--[=[
+
+	Name:string,
+	MaximumSignals:number|nil,
+	MaxSignalsFunction:(SignalTableName:string, GivenFunction:string) -> (any), --Fires when you attempt to create a signal when #Signals > MaximumSignals
+	MaxRuntime:number|nil --Max time the signal can run before it disconnects
+
+]=]
 function Signal.new(SignalInfo:Class)
 	assert(SignalInfo.Name, "No name for signals module provided")
 

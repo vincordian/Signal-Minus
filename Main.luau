@@ -20,9 +20,9 @@ local Signal = {}
 --[=[
 
 	Name:string,
-	MaximumSignals:number|nil,
-	MaxSignalsFunction:(SignalTableName:string, GivenFunction:string) -> (any), --Fires when you attempt to create a signal when #Signals > MaximumSignals
-	MaxRuntime:number|nil --Max time the signal can run before it disconnects
+	MaximumSignals: number|nil,
+	MaxSignalsFunction: (SignalTableName:string, GivenFunction:string) -> (any), --Fires when you attempt to create a signal when #Signals > MaximumSignals
+	MaxRuntime: number|nil --Max time the signal can run before it disconnects
 
 ]=]
 function Signal.new(SignalInfo:Class)
@@ -30,11 +30,11 @@ function Signal.new(SignalInfo:Class)
 
 	local self = Signal[SignalInfo.Name]
 
-	assert(Signal[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
+	assert(not Signal[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
 
 	self.Name = SignalInfo.Name
 	self.MaximumSignals = SignalInfo.MaximumSignals
-	self.MaxSignalsFunction = if self.MaximumSignals then self.MaxSignalsFunction else function() print(`Reached maxed signals at {self.MaximumSignals}`) end
+	self.MaxSignalsFunction = if self.MaximumSignals then self.MaxSignalsFunction else nil
 
 	self.Signals = {}
 
@@ -61,12 +61,12 @@ function Signal:Connect(FunctionToConnect:(any) -> (any))
 	}
 
 	function Connection:Disconnect()
-		table.remove(self.Signals, Connection)
+		table.remove(self.Signals, table.find(self.Signals, Connection))
 		table.clear(Connection)
 		Connection = nil
 	end
 
-	table.insert(self.Signals, coroutine.create(Connection))
+	table.insert(self.Signals, coroutine.create(Connection.Function))
 
 	return Connection
 end
@@ -89,7 +89,7 @@ function Signal:Once(FunctionToConnect:(any) -> (any))
 	}
 
 	function Connection:Disconnect()
-		table.remove(self.Signals, Connection)
+		table.remove(self.Signals, table.find(self.Signals, Connection))
 		table.clear(Connection)
 		Connection = nil
 	end

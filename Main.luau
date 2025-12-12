@@ -80,7 +80,7 @@ function Signal:Once(FunctionToConnect:(any) -> (any))
 		Function = function(...)
 			FunctionToConnect(...)
 			pcall(function()
-				table.remove(self.Signals, Connection)
+				table.remove(self.Signals, table.find(self.Signals, Connection))
 				table.clear(Connection)
 				Connection = nil
 			end)

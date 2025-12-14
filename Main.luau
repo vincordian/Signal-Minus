@@ -27,10 +27,12 @@ local Signal = {}
 ]=]
 function Signal.new(SignalInfo:Class)
 	assert(SignalInfo.Name, "No name for signals module provided")
+	
+	Signal[SignalInfo.Name] = {}
+	
+	local self = setmetatable(Signal[SignalInfo.Name], Signal)
 
-	local self = Signal[SignalInfo.Name]
-
-	assert(not Signal[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
+	assert(Signal[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
 
 	self.Name = SignalInfo.Name
 	self.MaximumSignals = SignalInfo.MaximumSignals
@@ -54,7 +56,7 @@ end
 
 function Signal:Connect(FunctionToConnect:(any) -> (any))
 
-	if #self.Signals >= self.MaximumSignals then self.MaxSignalsFunction() return end
+	if self.MaximumSignals and #self.Signals >= self.MaximumSignals then self.MaxSignalsFunction() return end
 
 	local Connection = {
 		Function = FunctionToConnect,
@@ -84,8 +86,7 @@ function Signal:Once(FunctionToConnect:(any) -> (any))
 				table.clear(Connection)
 				Connection = nil
 			end)
-		end
-		,
+		end,
 	}
 
 	function Connection:Disconnect()

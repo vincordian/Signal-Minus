@@ -12,17 +12,6 @@ Someone please fork this repo and add them.
 
 --Types--
 
-export type Signal = typeof({
-	new = function()
-	end,
-	Fire = function()
-	end,
-	Connect = function()
-	end,
-	Once = function()
-	end
-})
-
 type Class = {
 	Name:string,
 	MaximumSignals:number|nil,

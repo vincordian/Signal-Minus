@@ -22,7 +22,7 @@ type Class = {
 
 --Module--
 
-local Signal = {}
+local SignalMinus = {}
 
 
 --Public Functions--
@@ -35,13 +35,13 @@ local Signal = {}
 	MaxRuntime: number|nil --Max time the signal can run before it disconnects
 
 ]=]
-function Signal.new(SignalInfo:Class)
+function SignalMinus.new(SignalInfo:Class)
 	assert(SignalInfo.Name, "No name for signals module provided")
-	assert(not Signal[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
+	assert(not SignalMinus[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
 
-	Signal[SignalInfo.Name] = {}
+	SignalMinus[SignalInfo.Name] = {}
 
-	local self = setmetatable(Signal[SignalInfo.Name], Signal)
+	local self = setmetatable(SignalMinus[SignalInfo.Name], SignalMinus)
 
 	self.Name = SignalInfo.Name
 	self.MaximumSignals = SignalInfo.MaximumSignals
@@ -49,14 +49,14 @@ function Signal.new(SignalInfo:Class)
 
 	self.Signals = {}
 
-	setmetatable(self, {__index = Signal})
+	setmetatable(self, {__index = SignalMinus})
 
 	return self
 end
 
 
 --Fires the signal
-function Signal:Fire(...)
+function SignalMinus:Fire(...)
 
 	local Arguments = {...}
 
@@ -70,7 +70,7 @@ function Signal:Fire(...)
 end
 
 
-function Signal:Connect(FunctionToConnect:(any) -> (any))
+function SignalMinus:Connect(FunctionToConnect:(any) -> (any))
 
 	if type(self.MaximumSignals) == "number" and #self.Signals >= self.MaximumSignals then self.MaxSignalsFunction() return end
 
@@ -90,7 +90,7 @@ function Signal:Connect(FunctionToConnect:(any) -> (any))
 end
 
 
-function Signal:Once(FunctionToConnect:(any) -> (any))
+function SignalMinus:Once(FunctionToConnect:(any) -> (any))
 
 	local Connection
 
@@ -117,4 +117,4 @@ function Signal:Once(FunctionToConnect:(any) -> (any))
 end
 
 
-return Signal
+return SignalMinus

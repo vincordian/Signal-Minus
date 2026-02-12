@@ -1,4 +1,5 @@
 --!native
+--!optimize 2
 
 --[[
 
@@ -22,7 +23,7 @@ type Class = {
 
 --Module--
 
-local SignalMinus = {}
+local Signal = {}
 
 
 --Public Functions--
@@ -35,13 +36,13 @@ local SignalMinus = {}
 	MaxRuntime: number|nil --Max time the signal can run before it disconnects
 
 ]=]
-function SignalMinus.new(SignalInfo:Class)
+function Signal.new(SignalInfo:Class)
 	assert(SignalInfo.Name, "No name for signals module provided")
-	assert(not SignalMinus[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
+	assert(not Signal[SignalInfo.Name], `Already found a signal named {SignalInfo.Name}, try it naming something else`)
 
-	SignalMinus[SignalInfo.Name] = {}
+	Signal[SignalInfo.Name] = {}
 
-	local self = setmetatable(SignalMinus[SignalInfo.Name], SignalMinus)
+	local self = setmetatable(Signal[SignalInfo.Name], Signal)
 
 	self.Name = SignalInfo.Name
 	self.MaximumSignals = SignalInfo.MaximumSignals
@@ -49,14 +50,14 @@ function SignalMinus.new(SignalInfo:Class)
 
 	self.Signals = {}
 
-	setmetatable(self, {__index = SignalMinus})
+	setmetatable(self, {__index = Signal})
 
 	return self
 end
 
 
 --Fires the signal
-function SignalMinus:Fire(...)
+function Signal:Fire(...)
 
 	local Arguments = {...}
 
@@ -70,12 +71,12 @@ function SignalMinus:Fire(...)
 end
 
 
-function SignalMinus:Connect(FunctionToConnect:(any) -> (any))
+function Signal:Connect(Function:(any) -> (any))
 
-	if type(self.MaximumSignals) == "number" and #self.Signals >= self.MaximumSignals then self.MaxSignalsFunction() return end
+	if type(self.MaximumSignals) == "number" and #self.Signals >= self.MaximumSignals and self.MaximumSignalsFunction then self.MaxSignalsFunction() return end
 
 	local Connection = {
-		Function = FunctionToConnect,
+		Function = Function,
 	}
 
 	function Connection:Disconnect()
@@ -90,13 +91,13 @@ function SignalMinus:Connect(FunctionToConnect:(any) -> (any))
 end
 
 
-function SignalMinus:Once(FunctionToConnect:(any) -> (any))
+function Signal:Once(Function:(any) -> (any))
 
 	local Connection
 
 	Connection = {
 		Function = function(...)
-			FunctionToConnect(...)
+			Function(...)
 			pcall(function()
 				table.remove(self.Signals, table.find(self.Signals, Connection))
 				table.clear(Connection)
@@ -117,4 +118,4 @@ function SignalMinus:Once(FunctionToConnect:(any) -> (any))
 end
 
 
-return SignalMinus
+return Signal
